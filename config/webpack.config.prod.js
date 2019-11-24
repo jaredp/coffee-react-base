@@ -346,4 +346,8 @@ module.exports = {
     child_process: 'empty',
     path: false
   },
+  // Exclude these server-only modules from webpack
+  externals: [
+    'express', 'cors'
+  ]
 };

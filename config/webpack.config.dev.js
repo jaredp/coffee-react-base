@@ -266,4 +266,8 @@ module.exports = {
   performance: {
     hints: false,
   },
+  // Exclude these server-only modules from webpack
+  externals: [
+    'express', 'cors'
+  ]
 };

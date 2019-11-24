@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+// register coffeescript first because cjsx-register is written in coffeescript
+require('coffeescript/register');
+
+// register cjsx support
+require('./cjsx-register');
+
+// load the path specified in args
+const path = require('path');
+require(path.resolve(process.argv[2]));
