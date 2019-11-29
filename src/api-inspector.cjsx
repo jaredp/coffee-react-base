@@ -41,6 +41,8 @@ useFormState = (initial_value) ->
     on_state_change = (evt) -> set_state(evt.target.value)
     return [state, set_state, on_state_change]
 
+repeat_lst = (n, lst) -> _l.flatten(lst for i in [0..n])
+
 exports.APIInspector = APIInspector = ->
     default_state_for = (route) ->
         {
@@ -131,6 +133,15 @@ exports.APIInspector = APIInspector = ->
     main_pane =
         if state.route?
             <React.Fragment>
+                <div children="API INSPECTOR v1" style={
+                    color: 'rgb(154, 154, 154)'
+                    fontSize: 10
+                    letterSpacing: '0.5px'
+                    marginBottom: '-0.7em'
+                    marginTop: '-6px'
+                    fontWeight: '100'
+                    textAlign: 'right'
+                } />
                 <h3 children={state.route.name} style={
                     paddingBottom: '0.8em'
                     borderBottom: '1px solid rgb(243, 243, 243)'
@@ -177,21 +188,25 @@ exports.APIInspector = APIInspector = ->
                 </code>
             </React.Fragment>
 
-    <div style={display: 'flex', minHeight: '100vh', flexDirection: 'row'}>
+    sidebar_width = 300
+    <React.Fragment>
         <div style={
-            width: 300, overflow: 'auto'
+            position: 'fixed', top: 0, left: 0, bottom: 0,
+            width: sidebar_width, overflow: 'auto'
             padding: '2em'
             backgroundColor: '#dedede'
+            boxShadow: 'rgba(0, 0, 0, 0.39) -8px 0px 6px -7px inset'
         }>
             { sidebar }
         </div>
         <div style={
-            flex: 1
+            marginLeft: sidebar_width
+            minHeight: '100vh'
+
             padding: '5em'
             paddingTop: '1em'
-            boxShadow: '0px 1px 6px 0px #00000063'
             backgroundColor: '#ffffff'
         }>
             { main_pane }
         </div>
-    </div>
+    </React.Fragment>
