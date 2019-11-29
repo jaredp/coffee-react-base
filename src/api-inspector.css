@@ -1,0 +1,27 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.button-on-hover {
+    box-shadow: 4px 6px 11px 1px #0000000f, 0px 0px 4px 1px #00000061;
+    transition: 0.1s ease-in all;
+}
+
+.button-on-hover:hover {
+    transform: translateY(-1px) scale(1.05);
+    box-shadow: 4px 6px 11px 1px #0000000f, 0px 0px 4px 1px #00000061;
+}
+
+.endpoint-link-underline-on-hover {
+    text-decoration: none;
+}
+
+.endpoint-link-underline-on-hover:hover {
+    text-decoration: underline;
+}

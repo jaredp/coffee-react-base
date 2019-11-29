@@ -1,5 +1,6 @@
 React = require 'react'
 createReactClass = require 'create-react-class'
+_l = require 'lodash'
 
 server = require './server/index'
 
@@ -16,7 +17,15 @@ bump_points = server.safe_rpc {
     handler: -> @old + 5
 }
 
-exports.App = App = ->
+concat_strs = server.safe_rpc {
+    name: 'concat_strs'
+    args:
+        lhs: server.string
+        rhs: server.string
+    handler: -> @lhs + @rhs
+}
+
+exports.Main = Main = ->
     [score, setScore] = React.useState(0)
 
     <div style={maxWidth: 600, margin: 'auto', fontSize: '2em'}>
@@ -34,3 +43,7 @@ exports.App = App = ->
             } />
         </div>
     </div>
+
+{APIInspector} = require './api-inspector'
+
+exports.App = APIInspector

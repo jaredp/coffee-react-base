@@ -6,6 +6,9 @@ require('coffeescript/register')
 
 require.extensions['.cjsx'] = require.extensions['.coffee']
 
+require.extensions['.css'] = (module, filename) ->
+    # no-op; ignore require('*.css')
+
 # swizzle CoffeeScript.compile to preprocess with cjsx
 plain_coffee_compile = CoffeeScript.compile
 CoffeeScript.compile = (code, opts) ->

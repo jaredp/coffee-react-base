@@ -12,9 +12,10 @@ if process.env.SERVER
     app.use cors('*')
 
     expose_rpc = (name, handler) ->
-        app.post "/#{name}", (req, res) ->
+        app.post "/api/#{name}", (req, res) ->
             do =>
                 try
+                    console.log 'request', name, req.body
                     res.json await handler(req.body)
                 catch error
                     console.error({rpc: name, args: req.body, error})
@@ -27,11 +28,15 @@ else
 
 
 send_rpc = (name, args) ->
-    response = await fetch("#{absolute_host}/#{name}", {
+    response = await fetch("#{absolute_host}/api/#{name}", {
         method: 'POST', headers: {'Content-Type': 'application/json'}, mode: 'cors'
         body: JSON.stringify(args)
     })
+    if response.status != 200
+        throw new Error("HTTP #{response.status}")
     return await response.json()
+
+exports.all_registered_api_routes = all_registered_api_routes = []
 
 
 exports.safe_rpc = safe_rpc = ({name: endpoint_name, args: validators, handler}) ->
@@ -52,6 +57,12 @@ exports.safe_rpc = safe_rpc = ({name: endpoint_name, args: validators, handler})
         )
         return await send_rpc(endpoint_name, serialized)
 
+    all_registered_api_routes.push {
+        name: endpoint_name
+        args: validators
+        call: invoke_from_client
+    }
+
     return invoke_from_client
 
 exports.p = p = {
@@ -60,6 +71,7 @@ exports.p = p = {
             return unsanitized if _l.isNumber unsanitized
             throw new Error('invalid parameter')
         serialize: (obj) -> obj
+        api_inspector_default_value: -> 0
     }
 
     string: {
@@ -67,6 +79,7 @@ exports.p = p = {
             return unsanitized if _l.isString unsanitized
             throw new Error('invalid parameter')
         serialize: (obj) -> obj
+        api_inspector_default_value: -> ""
     }
 }
 
