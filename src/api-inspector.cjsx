@@ -36,6 +36,11 @@ pretty_json = (obj) -> JSON.stringify(obj, null, '  ')
 default_args_for = (route) ->
     _l.mapValues route.args, (arg_ty) -> arg_ty.api_inspector_default_value()
 
+useFormState = (initial_value) ->
+    [state, set_state] = React.useState(initial_value)
+    on_state_change = (evt) -> set_state(evt.target.value)
+    return [state, set_state, on_state_change]
+
 exports.APIInspector = APIInspector = ->
     default_state_for = (route) ->
         {
@@ -68,9 +73,42 @@ exports.APIInspector = APIInspector = ->
     useKeyListener {key: 'Enter', meta: true},  ->
         run_api_call()
 
+    route_name_filter_box_ref = React.useRef()
+    [route_name_filter, set_route_name_filter, on_route_name_change] = useFormState('')
+
+    # Note: We *can* steal cmd+f, and it works great.  BUT, when we do, we kill searching
+    # through the arguments and results, which is a real loss.
+    # Uncomment the following to steal cmd+f for the route filtering:
+    #
+    # useKeyListener {key: 'KeyF', meta: true}, ->
+    #     route_name_filter_box_ref.current?.focus()
+
     sidebar =
         <React.Fragment>
-            { server.all_registered_api_routes.map (route) ->
+            <div style={
+                display: 'flex', flexDirection: 'row', alignItems: 'baseline'
+                paddingBottom: 10
+                borderBottom: '1px solid #00000047'
+                marginBottom: '1em'
+            }>
+                <span children="🕵️‍" />
+                <input
+                    value={route_name_filter} onChange={on_route_name_change}
+                    placeholder="Search"
+                    ref={route_name_filter_box_ref}
+                    style={
+                        outline: 'none'
+                        border: 'none'
+                        width: '100%'
+                        fontSize: 16
+                        background: 'none'
+                        marginLeft: 4
+                        fontFamily: 'monospace'
+                    }
+                />
+            </div>
+
+            { server.all_registered_api_routes.filter((r) -> r.name.includes(route_name_filter)).map (route) ->
                 <div key={route.name} style={
                     marginBottom: '1em'
                 }>
@@ -142,7 +180,7 @@ exports.APIInspector = APIInspector = ->
     <div style={display: 'flex', minHeight: '100vh', flexDirection: 'row'}>
         <div style={
             width: 300, overflow: 'auto'
-            padding: '2em', paddingTop: '3.5em'
+            padding: '2em'
             backgroundColor: '#dedede'
         }>
             { sidebar }
